@@ -26,6 +26,8 @@ pandas (v.1.5.1)
 
 ## Installation Guide:
 
+Ths installation requires a few seconds including test data.
+
 ```
 git clone https://github.com/jerrylee9310/xchrom
 cd xchrom
@@ -54,6 +56,12 @@ rel_fn = {
 # run X-CHROM
 MODEL = XCHROM.XCHROM()
 res_optim, res_frreg = MODEL.estimate_x(rel_fn, pheno_fn, num_boots=1000)
+```
+
+The results of X-CHROM is consists of four variance components (a, xMale, xFemale, mPO).
+The mean and standard error of the estimates can be checked using following command in Python.
+```
+res_optim.agg(["mean", "std"])
 ```
 
 Detail description of how the simulation data is generated and how to run the X-CHROM using the 
