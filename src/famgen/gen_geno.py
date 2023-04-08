@@ -119,3 +119,117 @@ class FamGenoSimul:
             raise ValueError("`chr_type` should be 'autosome' or 'chrX'.")
 
         return np.dstack([hap_from_mom.astype(int), hap_from_dad.astype(int)])
+
+    def make_parents_haps(self, num_sample):
+        """Generate parent haplotypes.
+
+        This function generates the haplotypes for the father and mother. The haplotypes
+        are stored in a dictionary with the keys "father" and "mother". Each parent has
+        two keys, "autosome" and "chrX".
+
+        Args:
+            num_sample (int): The number of samples to generate.
+
+        Returns:
+            dict: A dictionary of the generated parent haplotypes.
+        """
+        dict_parents = {
+            "father" : {
+                "autosome" : None,
+                "chrX" : None},
+            "mother" : {
+                "autosome" : None,
+                "chrX" : None}
+        }
+
+        ## MAKE PARENT's HAPS
+        for parent in ["father", "mother"]:
+            for chr_type in ["autosome", "chrX"]:
+                if (chr_type == "chrX") & (parent == "father"):
+                    dict_parents[parent][chr_type], _ = self.generate_parent_haplotype(num_sample=num_sample, chr_type="haploid")
+                else:
+                    dict_parents[parent][chr_type], _ = self.generate_parent_haplotype(num_sample=num_sample, chr_type="diploid")
+        
+        return dict_parents
+    
+    def make_offspring_haps(self, dict_parents, off_type):
+        # off_type = "son", "daughter"
+        dict_off = {
+            "autosome" : None,
+            "chrX" : None
+        }
+        for chr_type in ["autosome", "chrX"]:
+            dict_off[chr_type] = self.make_offspring_haplotype(
+                haps_mother = dict_parents["mother"][chr_type],
+                haps_father = dict_parents["father"][chr_type],
+                off_type = off_type,
+                chr_type=chr_type
+            )
+        return dict_off
+    
+    def make_family_geno(self, num_sample, rel):
+        """
+        Generate offspring's genotype for the specified relationship type.
+        
+        Parameters:
+        class_FamGenoSimul (class): Class for family simulation.
+        num_sample (int): The number of samples to be simulated.
+        rel (str): Relationship type. 
+            Options: father_son, mother_son, father_daughter, mother_daughter, son_son, son_daughter, daughter_daughter
+            
+        Returns:
+        dict: Dictionary with offspring's genotype for each chromosome type.
+        
+        """
+        parents = ["father", "mother"]
+        offs = ["son", "daughter"]
+        pos = ["father_son", "mother_son", "father_daughter", "mother_daughter"]
+        sibs = ["son_son", "son_daughter", "daughter_daughter"]
+        
+        dict_parents = self.make_parents_haps(num_sample)
+        
+        ## MAKE OFFSPRING's HAPS ##
+        if rel in ["father_son", "mother_son"]:
+            dict_off = self.make_offspring_haps(dict_parents, off_type="son")
+            
+        elif rel in ["father_daughter", "mother_daughter"]:
+            dict_off = self.make_offspring_haps(dict_parents, off_type="daughter")
+
+        elif rel == "son_son":
+            dict_off1 = self.make_offspring_haps(dict_parents, off_type="son")
+            dict_off2 = self.make_offspring_haps(dict_parents, off_type="son")
+
+        elif rel == "son_daughter":
+            dict_off1 = self.make_offspring_haps(dict_parents, off_type="son")
+            dict_off2 = self.make_offspring_haps(dict_parents, off_type="daughter")
+
+        elif rel == "daughter_daughter":
+            dict_off1 = self.make_offspring_haps(dict_parents, off_type="daughter")
+            dict_off2 = self.make_offspring_haps(dict_parents, off_type="daughter")
+
+        else: 
+            raise Exception("!!")
+
+        # return dict_parents
+        dict_rel = {}
+        
+        if rel in pos:
+            for r in rel.split("_"):
+                dict_rel[r] = {}
+                for chr_type in ["autosome", "chrX"]:
+                    if r in parents:
+                        dict_rel[r][chr_type] = dict_parents[r][chr_type]
+                    elif r in offs:
+                        dict_rel[r][chr_type] = dict_off[chr_type]
+        
+        elif rel in sibs:
+            for i, r in enumerate(rel.split("_")):
+                r_new = r + str(i+1)
+                dict_rel[r_new] = {}
+                for chr_type in ["autosome", "chrX"]:
+                    if i == 0:
+                        dict_rel[r_new][chr_type] = dict_off1[chr_type]
+                    else:
+                        dict_rel[r_new][chr_type] = dict_off2[chr_type]
+                
+        return dict_rel
