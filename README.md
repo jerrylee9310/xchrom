@@ -16,10 +16,12 @@ Linux: CentOS v.7
 
 ### Python Dependencies
 
+The package has been tested on the following version of dependencies. 
+
 ```
-numpy
-scipy
-pandas
+numpy (v.1.22.3)
+scipy (v.1.7.3)
+pandas (v.1.5.1)
 ```
 
 ## Installation Guide:
