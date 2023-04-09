@@ -58,6 +58,7 @@ def make_sums_and_d2(df_res_xchrom:pd.DataFrame, d2_cutoff: float = 2e-3) -> pd.
         d2_se = np.nan
     
     tmp["d2"] = [d2_mean, d2_se]
+    
     return tmp
     # is_pos_x = (df_sums["xMale:mean"] > d2_cutoff) & (df_sums["xFemale:mean"] > d2_cutoff)
     # df_sums.loc[is_pos_x, "d2:mean"] \
