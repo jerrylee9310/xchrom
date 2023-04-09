@@ -2,8 +2,9 @@
 
 ## Introduction
 
-X-CHROM is the model which estimates the X chromosome heritability 
-and dosage compensation ratio from familial relationship and their phenotype. This model does not require genotype information and uses only phenotype and familial relationship as a input.
+X-CHROM is a model that estimates X chromosome heritability and dosage compensation ratio 
+from familial relationships and their phenotypes. This model does not require genotype information 
+and uses only phenotype and familial relationship data as input.
 
 ## Software requirements
 
@@ -11,12 +12,13 @@ and dosage compensation ratio from familial relationship and their phenotype. Th
 
 The package has been tested on the following systems:
 
-macOS: Ventura (13.0.1)
-Linux: CentOS v.7
+- macOS: Ventura v.13.0.1
+- Linux: CentOS v.7
+
 
 ### Python Dependencies
 
-The package has been tested on the following version of dependencies. 
+The package has been tested with the following versions of dependencies:
 
 ```
 numpy (v.1.22.3)
@@ -26,7 +28,7 @@ pandas (v.1.5.1)
 
 ## Installation Guide:
 
-Ths installation requires a few seconds including test data.
+The installation process takes a few seconds, including downloading test data.
 
 ```
 git clone https://github.com/jerrylee9310/xchrom
@@ -35,12 +37,13 @@ cd xchrom
 
 ## Usage
 
-X-CHROM needs two type of input, 1) phenotype, and 2) relationship information.
+X-CHROM requires two types of input:
 
-- Phenotype data consists of three columns (ID, ID, phenotype). Check the example format in `./test_data/simul.phen`.
-- Relationship information data consists of two columns (ID1, ID2) which represent the individual pairs which has specific familial relationship. Check the example format in `./test_data/{relationship}.relationship`.
+1. Phenotype data, which consists of three columns (ID, ID, phenotype). Check the example format in `./test_data/simul.phen`.
+2. Relationship information data, which consists of two columns (ID1, ID2) representing pairs of individuals with specific familial relationships. Check the example format in `./test_data/{relationship}.relationship`.
 
-The X-CHROM can be run by following code using Python.
+X-CHROM can be run using the following Python code:
+
 ```
 import src.xchrom.XCHROM as XCHROM
 
@@ -58,21 +61,18 @@ MODEL = XCHROM.XCHROM()
 res_optim, res_frreg = MODEL.estimate_x(rel_fn, pheno_fn, num_boots=1000)
 ```
 
-The results of X-CHROM is consists of four variance components (a, xMale, xFemale, mPO).
-The mean and standard error of the estimates can be checked using following command in Python.
+The results of X-CHROM consist of four variance components (a, xMale, xFemale, mPO). The mean and standard error of the estimates can be checked using the following command in Python:
+
 ```
 res_optim.agg(["mean", "std"])
 ```
 
-Detail description of how the simulation data is generated and how to run the X-CHROM using the 
-phenotype and relationship information data can be found in `./notebook/simualtion.ipynb`.
+A detailed description of how the simulation data is generated and how to run X-CHROM using phenotype and relationship information data can be found in ./notebook/simulation.ipynb. This file contains the following:
 
-This file contains the 
-    1. familial phenotype simulation process,
-    2. estimating the X chromosome heritability (X-CHROM).
+1. Familial phenotype simulation process
+2. Estimating the X chromosome heritability (X-CHROM)
 
 
 ## Miscellaneous
 
-For a better understanding on the dosage compensation (DC), 
-check the `./notebook/dcSimulation.ipynb`. In this notebook, we describe why the variance explained by the X chromosome is half in females in the full dosage compensation.
+For a better understanding of dosage compensation (DC), check `./notebook/dcSimulation.ipynb`. In this notebook, we describe why the variance explained by the X chromosome is half in females in the context of full dosage compensation.

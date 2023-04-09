@@ -35,38 +35,62 @@ def make_sums_and_d2(df_res_xchrom:pd.DataFrame, d2_cutoff: float = 2e-3) -> pd.
     """summarize the raw X-CHROM results file and compute 'd2'.
 
     Args:
-        df_res_xchrom (pd.DataFrame): _description_
+        df_res_xchrom (pd.DataFrame): columns including ["xMale", "xFemale"] rows including ["mean", "std"]
         d2_cutoff (float, optional): _description_. Defaults to 2e-3.
 
     Returns:
         pd.DataFrame: _description_
     """
-    phenos = df_res_xchrom["pheno"].unique()
+    tmp = copy.deepcopy(df_res_xchrom)
 
-    df_sums = pd.DataFrame(columns=["category", "pheno", 
-                                    "a:mean", "a:se", 
-                                    "xMale:mean", "xMale:se",
-                                    "xFemale:mean", "xFemale:se",
-                                    "mPO:mean", "mPO:se",])
-    for pheno in phenos:
-        tmp = df_res_xchrom[df_res_xchrom["pheno"] == pheno]
-        category = tmp["category"].unique()[0]
-        a_mean, xMale_mean, xFemale_mean, mPO_mean = tmp.mean()
-        a_se, xMale_se, xFemale_se, mPO_se = tmp.std()
-        df_sums.loc[len(df_sums)] = [category, pheno,
-                                     a_mean, a_se,
-                                     xMale_mean, xMale_se,
-                                     xFemale_mean, xFemale_se,
-                                     mPO_mean, mPO_se]
-    
+    xmale_mean = tmp["xMale"]["mean"]
+    xmale_se = tmp["xMale"]["std"]
+    xfemale_mean = tmp["xFemale"]["mean"]
+    xfemale_se = tmp["xFemale"]["std"]
+
     # make d2
-    is_pos_x = (df_sums["xMale:mean"] > d2_cutoff) & (df_sums["xFemale:mean"] > d2_cutoff)
-    df_sums.loc[is_pos_x, "d2:mean"] \
-        = df_sums["xMale:mean"] / df_sums["xFemale:mean"]
-    df_sums.loc[is_pos_x, "d2:se"] \
-        = df_sums["d2:mean"] * np.sqrt((df_sums["xMale:se"]/df_sums["xMale:mean"])**2 + (df_sums["xFemale:se"]/df_sums["xFemale:mean"])**2)
+    is_pos_X = (xmale_mean > d2_cutoff) & (xfemale_mean > d2_cutoff)
+    if is_pos_X:
+        d2_mean = xmale_mean / xfemale_mean
+        d2_se = d2_mean * np.sqrt((xmale_se / xmale_mean)**2 + (xfemale_se / xfemale_mean)**2)
+    else:
+        d2_mean = np.nan
+        d2_se = np.nan
+    
+    tmp["d2"] = [d2_mean, d2_se]
+    return tmp
+    # is_pos_x = (df_sums["xMale:mean"] > d2_cutoff) & (df_sums["xFemale:mean"] > d2_cutoff)
+    # df_sums.loc[is_pos_x, "d2:mean"] \
+    #     = df_sums["xMale:mean"] / df_sums["xFemale:mean"]
+    # df_sums.loc[is_pos_x, "d2:se"] \
+    #     = df_sums["d2:mean"] * np.sqrt((df_sums["xMale:se"]/df_sums["xMale:mean"])**2 + (df_sums["xFemale:se"]/df_sums["xFemale:mean"])**2)
 
-    return df_sums
+    # phenos = df_res_xchrom["pheno"].unique()
+
+    # df_sums = pd.DataFrame(columns=["category", "pheno", 
+    #                                 "a:mean", "a:se", 
+    #                                 "xMale:mean", "xMale:se",
+    #                                 "xFemale:mean", "xFemale:se",
+    #                                 "mPO:mean", "mPO:se",])
+    # for pheno in phenos:
+    #     tmp = df_res_xchrom[df_res_xchrom["pheno"] == pheno]
+    #     category = tmp["category"].unique()[0]
+    #     a_mean, xMale_mean, xFemale_mean, mPO_mean = tmp.mean()
+    #     a_se, xMale_se, xFemale_se, mPO_se = tmp.std()
+    #     df_sums.loc[len(df_sums)] = [category, pheno,
+    #                                  a_mean, a_se,
+    #                                  xMale_mean, xMale_se,
+    #                                  xFemale_mean, xFemale_se,
+    #                                  mPO_mean, mPO_se]
+    
+    # # make d2
+    # is_pos_x = (df_sums["xMale:mean"] > d2_cutoff) & (df_sums["xFemale:mean"] > d2_cutoff)
+    # df_sums.loc[is_pos_x, "d2:mean"] \
+    #     = df_sums["xMale:mean"] / df_sums["xFemale:mean"]
+    # df_sums.loc[is_pos_x, "d2:se"] \
+    #     = df_sums["d2:mean"] * np.sqrt((df_sums["xMale:se"]/df_sums["xMale:mean"])**2 + (df_sums["xFemale:se"]/df_sums["xFemale:mean"])**2)
+
+    # return df_sums
 
 @dataclass
 class XCHROM:
