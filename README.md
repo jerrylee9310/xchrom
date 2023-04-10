@@ -1,6 +1,6 @@
 # X-CHROM
 <p align="center">
-<img src="./pic/test1.png" width="1000" height="400"/></p>
+<img src="./pic/fig1.jpg" width="1000" height="400"/></p>
 <!-- ![Method overview](./pic/test1.png){: width="100%" height="100%"} -->
 
 ## Introduction
