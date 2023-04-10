@@ -1,5 +1,7 @@
 # X-CHROM
 
+![Method overview](./pic/figure1.png)
+
 ## Introduction
 
 X-CHROM is a model that estimates X chromosome heritability and dosage compensation ratio 
@@ -44,12 +46,12 @@ X-CHROM requires two types of input:
 
 X-CHROM can be run using the following Python code:
 
-```
+```python
 import src.xchrom.XCHROM as XCHROM
 
 # input files
 pheno_fn = "../test_data/simul.phen"
-rel_fn = {
+rel_fn = { # key is the relationship, value is the path of the relationship file
     'father_son': '../test_data/father_son.relation',
     'mother_daughter': '../test_data/mother_daughter.relation',
     'son_son': '../test_data/son_son.relation',
@@ -63,7 +65,7 @@ res_optim, res_frreg = MODEL.estimate_x(rel_fn, pheno_fn, num_boots=1000)
 
 The results of X-CHROM consist of four variance components (a, xMale, xFemale, mPO). The mean and standard error of the estimates can be checked using the following command in Python:
 
-```
+```python
 res_optim.agg(["mean", "std"])
 ```
 
@@ -76,3 +78,9 @@ A detailed description of how the simulation data is generated and how to run X-
 ## Miscellaneous
 
 For a better understanding of dosage compensation (DC), check `./notebook/dcSimulation.ipynb`. In this notebook, we describe why the variance explained by the X chromosome is half in females in the context of full dosage compensation.
+
+## License
+The X-CHROM Software is freely available for non-commercial academic research use. For other usage, one must contact Buhm Han (BH) at buhm.han@snu.ac.kr (patent pending). WE (Jaeeun Lee and BH) MAKE NO REPRESENTATIONS OR WARRANTIES WHATSOEVER, EITHER EXPRESS OR IMPLIED, WITH RESPECT TO THE CODE PROVIDED HERE UNDER. IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE WITH RESPECT TO CODE ARE EXPRESSLY DISCLAIMED. THE CODE IS FURNISHED "AS IS" AND "WITH ALL FAULTS" AND DOWNLOADING OR USING THE CODE IS UNDERTAKEN AT YOUR OWN RISK. TO THE FULLEST EXTENT ALLOWED BY APPLICABLE LAW, IN NO EVENT SHALL WE BE LIABLE, WHETHER IN CONTRACT, TORT, WARRANTY, OR UNDER ANY STATUTE OR ON ANY OTHER BASIS FOR SPECIAL, INCIDENTAL, INDIRECT, PUNITIVE, MULTIPLE OR CONSEQUENTIAL DAMAGES SUSTAINED BY YOU OR ANY OTHER PERSON OR ENTITY ON ACCOUNT OF USE OR POSSESSION OF THE CODE, WHETHER OR NOT FORESEEABLE AND WHETHER OR NOT WE HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES, INCLUDING WITHOUT LIMITATION DAMAGES ARISING FROM OR RELATED TO LOSS OF USE, LOSS OF DATA, DOWNTIME, OR FOR LOSS OF REVENUE, PROFITS, GOODWILL, BUSINESS OR OTHER FINANCIAL LOSS.
+
+## Reference
+Genotype-Free Estimation of Sex Chromosome Heritability and Dosage Compensation, __under review__.
